@@ -1,158 +1,145 @@
-# Flask Modular API Structure with Optional Bridge Layer
+# Flask Modular API Template
 
-## 🧩 Overview
-
-This is a scalable and modular **Flask API boilerplate** built for production-ready backend services.  
-It features clean separation of concerns, modular architecture, and optional multi-language support via a `bridge/` layer.
+A scalable and modular Flask API architecture that supports clean separation of concerns through **service-oriented** or **cross-language bridge-based** modules. This boilerplate is ideal for projects that need flexibility, security, and maintainability — whether fully Python-based or integrating with external languages like **Rust**, **Go**, or **C++**.
 
 ---
 
-## 🔄 Key Architectural Layers
+## 📁 Project Structure
 
-| Folder        | Description                                                                 |
-|---------------|-----------------------------------------------------------------------------|
-| `resources/`  | Handles HTTP endpoints (controllers)                                        |
-| `services/`   | Core business logic (pure Python)                                           |
-| `bridge/`     | Interfaces with external non-Python modules (e.g., Rust, C++ via FFI/PyO3) |
-| `models/`     | SQLAlchemy or data models                                                   |
-| `schemas/`    | Marshmallow (or other) input/output validators                              |
-| `utils/`      | Reusable helper utilities (JWT, hashing, etc.)                              |
-| `decorators/` | Request validation, token enforcement                                       |
-| `middleware.py` | Custom request/response middleware                                       |
-| `errors.py`   | Centralized error handling                                                  |
+> The structure varies based on the selected `architecture_mode` — either `"services"` (pure Python logic) or `"bridge"` (external integrations).
 
----
+<details>
+<summary><strong>🧩 Common Structure</strong></summary>
 
-## 📁 Folder Structure
-
-```
-flask-api-structure/
+```plaintext
+flask_modular_api_template/
 ├── app/
-│   ├── services/                     # ✅ Business logic (pure Python)
-│   │   └── authentication/
-│   │       └── __init__.py
-│
-│   ├── bridge/                       # 🛠 Interface to non-Python logic (e.g., Rust)
-│   │   └── rust_crypto/
-│   │       └── __init__.py          # e.g., wrapped Rust module using PyO3/cffi
-│
-│   ├── decorators/                  # 🔐 Custom decorators (auth, validation)
-│   │   ├── __init__.py
-│   │   ├── token_validation.py
-│   │   └── payload_verification.py
-│
-│   ├── models/                      # 🧬 SQLAlchemy or data models
-│   │   ├── __init__.py
-│   │   └── user.py
-│
-│   ├── resources/                   # 🌐 API endpoints (Flask routes)
-│   │   ├── __init__.py
-│   │   └── authentication.py
-│
-│   ├── schemas/                     # ✅ Marshmallow schemas for validation
-│   │   └── __init__.py
-│
-│   ├── utils/                       # 🧰 Utility functions (JWT, responses)
-│   │   ├── __init__.py
-│   │   ├── jwt_helpers.py
-│   │   ├── response.py
-│   │   └── security.py
-│
-│   ├── __init__.py
-│   ├── config.py                   # ⚙️ Environment/config management
-│   ├── errors.py                   # ❗ Error handlers
-│   ├── middleware.py               # 🔄 Middleware hooks
-│   └── routes.py                   # 📍 Route registration
-│
-├── tests/                           # 🧪 Unit tests
-│   ├── __init__.py
-│   └── test_auth.py
-│
-├── api.ini                          # 🔧 Config file
-├── requirements.txt                 # 📦 Python dependencies
-├── run.py                           # 🚀 Dev server runner
-├── wsgi.py                          # 🌀 WSGI entry for production (gunicorn)
-└── README.md                        # 📘 This file
+│   ├── resources/                  # HTTP endpoint logic
+│   ├── decorators/                # Custom decorators (e.g., token checks)
+│   ├── models/                    # SQLAlchemy models
+│   ├── schemas/                   # Data validation & serialization (e.g., Marshmallow)
+│   ├── utils/                     # Reusable utility functions
+│   ├── config.py                  # Configuration setup
+│   ├── errors.py                  # Global error handlers
+│   ├── middleware.py              # Middleware logic
+│   ├── routes.py                  # Blueprint registration
+│   └── __init__.py
+├── tests/                         # Unit/integration tests
+├── api.ini                        # Configuration file
+├── requirements.txt               # Dependencies
+├── run.py                         # Dev server entrypoint
+├── wsgi.py                        # WSGI production entrypoint
+└── README.md
 ```
+
+</details>
 
 ---
 
-## 🚀 Getting Started
+<details>
+<summary><strong>🛠️ If <code>architecture_mode = "services"</code></strong></summary>
 
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/your-username/flask-api-structure.git
-cd flask-api-structure
+```plaintext
+app/
+└── services/                      # Pure Python logic layer
+    ├── authentication/
+    │   └── __init__.py
+    ├── billing/
+    │   └── __init__.py
+    └── notifications/
+        └── __init__.py
 ```
 
-### 2. Set Up Virtual Environment
+</details>
 
-```bash
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
+<details>
+<summary><strong>🔗 If <code>architecture_mode = "bridge"</code></strong></summary>
+
+```plaintext
+app/
+└── bridge/                        # External logic via FFI (e.g., Rust/C++)
+    ├── authentication/
+    │   ├── __init__.py
+    │   └── authentication_rust_bridge.py
+    ├── billing/
+    │   ├── __init__.py
+    │   └── billing_rust_bridge.py
+    └── notifications/
+        ├── __init__.py
+        └── notifications_rust_bridge.py
 ```
 
-### 3. Install Dependencies
+</details>
+
+---
+
+## 🚀 Quick Start
+
+### 1. Generate Project Structure
+
+Use the included Python script to generate the scaffold:
+
+```bash
+python scaffold_api.py
+```
+
+Inside `scaffold_api.py`, configure the following:
+
+```python
+base_path = "your_project_name"
+modules = ["authentication", "billing", "notifications"]
+architecture_mode = "services"  # or "bridge"
+```
+
+### 2. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Run the Flask App
+### 3. Run Development Server
 
 ```bash
 python run.py
 ```
 
-### 5. Run with Gunicorn (Production)
+---
+
+## 🧪 Testing
 
 ```bash
-gunicorn wsgi:app
+pytest
 ```
 
 ---
 
-## 🧪 Running Tests
+## 🧱 Technologies Used
 
-```bash
-pytest tests/
-```
-
----
-
-## 🔐 Security Features
-
-- JWT Token Validation
-- Request Payload Verification
-- Token-based route protection using decorators
-
-You can customize the logic in:
-- `app/utils/jwt_helpers.py`
-- `app/decorators/token_validation.py`
-- `app/decorators/payload_verification.py`
+- **Flask** — Python web framework
+- **JWT** — Authentication (optional)
+- **Modular Design** — Clean, pluggable modules
+- **Optional Rust Integration** — For performance-critical logic
+- **Pytest** — Testing framework
 
 ---
 
-## 🧠 When to Use `services/` vs `bridge/`
+## 🧠 Naming Convention Tips
 
-| Folder       | Use it for...                                                       |
-|--------------|----------------------------------------------------------------------|
-| `services/`  | Business logic entirely in Python (e.g., auth, DB operations, etc.) |
-| `bridge/`    | Wrapping/using Rust, C++, Go modules with `cffi`, `ctypes`, `PyO3`, etc. |
+- Use `services/` for native, testable Python business logic.
+- Use `bridge/` for FFI bindings (Rust, Go, etc.) via tools like `PyO3`, `ctypes`, or `cffi`.
 
-If you're not integrating other languages, ignore `bridge/` and put logic in `services/`.
+You **should not** use both at once — choose based on your project needs.
 
 ---
 
-## 📚 License
+## 📦 Repository Name Suggestion
 
-MIT License. Use freely, modify, and contribute.
+**`flask-modular-api-template`**
+
+> Cleanly separates web, logic, and optional FFI bridges for secure, extensible backends.
 
 ---
 
-## 🧱 Future Extensions
+## 📜 License
 
-- Add `Dockerfile` and `docker-compose.yml`
-- Support Swagger/OpenAPI auto-documentation
-- Add GitHub Actions CI/CD
+MIT © YourNameHere
